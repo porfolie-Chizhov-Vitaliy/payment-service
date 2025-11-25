@@ -1,0 +1,95 @@
+server:
+  port: 8081  # ← 8081 как ты сказал
+
+spring:
+  application:
+    name: payment-service
+  flyway:
+    enabled: true
+    locations: classpath:db/
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    #repair-on-migrate: true
+  # БД настройки - ДЛЯ DOCKER
+  datasource:
+    url: jdbc:postgresql://payment-postgres:5432/payment_db
+    username: payment_user
+    password: payment_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 15
+      connection-timeout: 60000
+
+  # Kafka настройки - ДЛЯ DOCKER
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: payment-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
+  # Redis настройки - ДЛЯ DOCKER
+  data:
+    redis:
+      host: redis
+      port: 6379
+      database: 1
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: 5000ms
+
+  # JPA настройки
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show_sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: false
+        format_sql: false
+
+
+# Actuator настройки
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Логирование для Docker
+logging:
+  level:
+    com.dbo: INFO
+    org.springframework.web: INFO
+    org.hibernate: WARN
+    org.apache.kafka: WARN
+
+# Кастомные настройки
+app:
+  environment: DOCKER
+  payment:
+    max-amount: 1000000
+    processing-timeout: 30s
+  kafka:
+    topics:
+      payment-requests: payment-requests
+      balance-updates: balance-updates
+      payment-status: payment-status
