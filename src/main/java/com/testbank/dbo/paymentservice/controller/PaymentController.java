@@ -8,6 +8,9 @@ import com.testbank.dbo.paymentservice.service.PaymentEventProducer;
 import com.testbank.dbo.paymentservice.service.PaymentHistoryStatusService;
 import com.testbank.dbo.paymentservice.validation.PaymentValidationResult;
 import com.testbank.dbo.paymentservice.validation.PaymentValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Tag(name = "Payment API", description = "Операции с платежами")
 @RequestMapping("/api/payments")
 public class PaymentController {
 
@@ -28,12 +32,15 @@ public class PaymentController {
 
     @Autowired
     private PaymentEventProducer paymentEventProducer; // ← ДОБАВЛЯЕМ
-
+    @Operation(summary = "Get all payments", description = "Показать все платежи")
+    @ApiResponse(responseCode = "200", description = "Отображение всех платежей")
     @GetMapping
     public List<PaymentEntity> getAllPayments() {
         return paymentRepository.findAll();
     }
-
+    @Operation(summary = "Create new payment", description = "Создание нового платежа")
+    @ApiResponse(responseCode = "200", description = "Платеж создался")
+    @ApiResponse(responseCode = "400", description = "Неверные платежные данные")
     @PostMapping
     public Object createPayment(@RequestBody Map<String, Object> request) {
         // 1. Получаем данные из запроса
@@ -88,5 +95,9 @@ public class PaymentController {
         // 6. Если все ок - сохраняем как "в обработке"
         paymentEntity.setStatus("PENDING");
         return paymentRepository.save(paymentEntity);
+    }
+    @GetMapping("/simple-test")
+    public String simpleTest() {
+        return "Simple test works! " ;
     }
 }
