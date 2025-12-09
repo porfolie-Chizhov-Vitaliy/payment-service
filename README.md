@@ -13,7 +13,7 @@
 **Bash:**
 - **Сборка** ```./mvnw clean package -DskipTests```
 - **Проверить работоспособность сервиса**
-`curl http://localhost:8080/actuator/health`
+`curl http://localhost:8081/actuator/health`
 - **Создать платеж**
 ```
 curl -X POST http://localhost:8081/api/payments \
