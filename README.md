@@ -4,9 +4,11 @@
 
 ## Что делает данный сервис ? 
  - Принимает и проверяет платежи через REST API
- - Сохраняет в Postgres
+ - Проверка создание таблиц в Postgres с помощью flyway
+ - Сохраняет данные в Postgres
  - Принимает и отправляет события в Kafka
- - Предоставляет метрики ля мониторинга (Prometheus)
+ - Предоставляет метрики для мониторинга (Prometheus)
+ - Swagger UI для REST API запросов ()
 
 ## Основные команды:
 
@@ -21,10 +23,13 @@ curl -X POST http://localhost:8081/api/payments \
             -d "{  "amount": 100,  "fromAccount": 40817810099910004328,  "toAccount": 40817810099910004328, "currency": "RUB","description": "Test payment #1"}" 
 ```
 **Docker:**
+  
+  **Ссылка на Docker image:** https://hub.docker.com/r/chizhovvm/payment-service
   - **Сборка образа**
-    docker build -t payment-service .
-
-  - Публикация в Docker Hub
+  `  docker build -t payment-service .`
+  - **Загрузка образа**
+    `docker pull chizhovvm/payment-service:latest`
+  - **Публикация в Docker Hub**
     ```
     docker tag payment-service chizhovvm/payment-service
     docker push chizhovvm/payment-service
